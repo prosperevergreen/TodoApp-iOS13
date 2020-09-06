@@ -11,14 +11,18 @@ import CoreData
 
 class TodoListViewController: UITableViewController {
     
+    //to get model context of core data from appDelegate
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    //init array of NSManagedObject
     var itemArr = [Item]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        get location of core data files
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+       
         
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
         
         // Uncomment the following line to preserve selection between presentations
@@ -35,13 +39,14 @@ class TodoListViewController: UITableViewController {
     //        return itemArray.count
     //    }
     
-    
+   //func to create number of cells to be used
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
         return itemArr.count
     }
     
+    //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: K.tbCellId, for: indexPath)
@@ -52,9 +57,17 @@ class TodoListViewController: UITableViewController {
         return cell
     }
     
-    
+    //func to run when cell is clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+//        //to update item using core data
+//        itemArr[indexPath.row].setValue(!itemArr[indexPath.row].isDone, forKey: "isDone")
+//
+//        //to delete item using core data
+//        context.delete(itemArr[indexPath.row])
+//        itemArr.remove(at: indexPath.row)
+        
+        //alternative update item
         if itemArr[indexPath.row].isDone {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
             itemArr[indexPath.row].isDone =  false
@@ -105,6 +118,7 @@ class TodoListViewController: UITableViewController {
         
     }
     
+    //function to dave context data to model of core data
     func saveItems() {
         do {
             try context.save()
@@ -115,6 +129,7 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
+    //func to fetch data to context to be loaded
     func loadItems() {
         let request : NSFetchRequest<Item> = Item.fetchRequest()
         do {
