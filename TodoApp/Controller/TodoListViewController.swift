@@ -9,19 +9,17 @@
 import UIKit
 import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController{
     
     //to get model context of core data from appDelegate
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     //init array of NSManagedObject
     var itemArr = [Item]()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        get location of core data files
-//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-       
+        //        get location of core data files
+        //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         loadItems()
         
@@ -39,7 +37,7 @@ class TodoListViewController: UITableViewController {
     //        return itemArray.count
     //    }
     
-   //func to create number of cells to be used
+    //func to create number of cells to be used
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
@@ -60,12 +58,12 @@ class TodoListViewController: UITableViewController {
     //func to run when cell is clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-//        //to update item using core data
-//        itemArr[indexPath.row].setValue(!itemArr[indexPath.row].isDone, forKey: "isDone")
-//
-//        //to delete item using core data
-//        context.delete(itemArr[indexPath.row])
-//        itemArr.remove(at: indexPath.row)
+        //        //to update item using core data
+        //        itemArr[indexPath.row].setValue(!itemArr[indexPath.row].isDone, forKey: "isDone")
+        //
+        //        //to delete item using core data
+        //        context.delete(itemArr[indexPath.row])
+        //        itemArr.remove(at: indexPath.row)
         
         //alternative update item
         if itemArr[indexPath.row].isDone {
@@ -79,7 +77,7 @@ class TodoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-
+    
     
     @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
         
@@ -126,18 +124,19 @@ class TodoListViewController: UITableViewController {
             print("error saving context: \(error)")
         }
         
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     
     //func to fetch data to context to be loaded
-    func loadItems() {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemArr = try context.fetch(request)
         } catch {
             print("error on fetch data \(error)")
         }
-           
+        
+        tableView.reloadData()
+        
     }
     /*
      override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -194,4 +193,44 @@ class TodoListViewController: UITableViewController {
      }
      */
     
+}
+
+//MARK: - Search Bar setup using Delegate protocol
+
+extension TodoListViewController: UISearchBarDelegate{
+    
+    //
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        // creates fetch pointer of Item type
+        let req: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        // sets the query rules for the fetcher
+        req.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text ?? "*")
+        
+        // sets the sort order
+        req.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        // loads the data to the context
+        loadItems(with: req)
+    }
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+        }
+    }
+    
+    //    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    //        if searchBar.text?.count == 0 {
+    //            loadItems()
+    //            searchBar.resignFirstResponder()
+    //        }
+    //    }
 }
