@@ -7,7 +7,46 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--ToDo-->
+        <!--Category -->
+        <scene sceneID="NgX-m8-y2r">
+            <objects>
+                <tableViewController id="a5b-Ae-aio" customClass="CategoryViewController" customModule="Todo_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="IjH-Mb-FMG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="7sZ-yy-vnP">
+                                <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="7sZ-yy-vnP" id="V5n-q7-gOT">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="a5b-Ae-aio" id="aHJ-ZZ-Ax6"/>
+                            <outlet property="delegate" destination="a5b-Ae-aio" id="KcV-FI-2cm"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Category " id="BLw-J6-z3h">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="plus" catalog="system" id="jaT-st-SEr">
+                            <color key="tintColor" name="BlackWhiteColor"/>
+                            <connections>
+                                <action selector="addCategoryPressed:" destination="a5b-Ae-aio" id="q7R-3L-1gx"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="sl3-Mt-LB8" kind="show" identifier="GoFromCategoryToItem" id="etg-3p-lad"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7T8-An-nPK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3" y="82"/>
+        </scene>
+        <!--Items-->
         <scene sceneID="WkP-d5-9RY">
             <objects>
                 <tableViewController id="sl3-Mt-LB8" customClass="TodoListViewController" customModule="Todo_App" customModuleProvider="target" sceneMemberID="viewController">
@@ -38,7 +77,7 @@
                             <outlet property="delegate" destination="sl3-Mt-LB8" id="Qco-7G-uB9"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="ToDo" id="V3t-jD-ic4">
+                    <navigationItem key="navigationItem" title="Items" id="V3t-jD-ic4">
                         <barButtonItem key="rightBarButtonItem" title="add" image="plus" catalog="system" id="T22-oA-XKX">
                             <color key="tintColor" name="BlackWhiteColor"/>
                             <connections>
@@ -46,6 +85,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="itemNavTitleBar" destination="V3t-jD-ic4" id="DR1-BT-xmt"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J8O-Ui-RlE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -62,7 +104,7 @@
                         <color key="backgroundColor" name="WhiteBlackColor"/>
                         <color key="barTintColor" name="HalfBlackWhiteColor"/>
                         <textAttributes key="titleTextAttributes">
-                            <color key="textColor" name="BlackWhiteColor"/>
+                            <color key="textColor" name="WhiteBlackColor"/>
                         </textAttributes>
                         <textAttributes key="largeTitleTextAttributes">
                             <color key="textColor" name="BlackWhiteColor"/>
@@ -70,12 +112,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="sl3-Mt-LB8" kind="relationship" relationship="rootViewController" id="aA8-yR-iTq"/>
+                        <segue destination="a5b-Ae-aio" kind="relationship" relationship="rootViewController" id="dwo-a3-0sa"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="una-hI-OR5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-28.985507246376812" y="81.696428571428569"/>
+            <point key="canvasLocation" x="3" y="-679"/>
         </scene>
     </scenes>
     <resources>

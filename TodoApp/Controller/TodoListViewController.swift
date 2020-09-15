@@ -16,12 +16,21 @@ class TodoListViewController: UITableViewController{
     
     //init array of NSManagedObject
     var itemArr = [Item]()
+    
+    var selectedCategory : Category?{
+        didSet{
+            itemNavTitleBar.title = selectedCategory?.name
+            loadItems()
+        }
+    }
+    
+    @IBOutlet weak var itemNavTitleBar: UINavigationItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         //        get location of core data files
         //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        loadItems()
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -47,7 +56,7 @@ class TodoListViewController: UITableViewController{
     //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.tbCellId, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: K.tbItemCellId, for: indexPath)
         let item = itemArr[indexPath.row]
         cell.textLabel?.text = item.title
         cell.accessoryType = item.isDone ? .checkmark : .none
@@ -78,40 +87,46 @@ class TodoListViewController: UITableViewController{
     }
     
     
-    
+    // add new item
     @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
         
-        
+        //create textfield to retreive alert string
         var textField = UITextField()
         
-        let alert = UIAlertController(title: K.alertVCTitle, message: "", preferredStyle: .alert)
+        //create alert VC
+        let alert = UIAlertController(title: K.alertVCItemTitle, message: "", preferredStyle: .alert)
         
-        
+        //add and set alert textfield
         alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = K.alertPlaceholder
+            alertTextField.placeholder = K.alertItemPlaceholder
             textField = alertTextField
         }
         
-        let alertAddAction = UIAlertAction(title: K.alertActionTitle, style: .default) { (alertAddAction) in
+        //create action button and set action function
+        let alertAddAction = UIAlertAction(title: K.alertActionItemTitle, style: .default) { (alertAddAction) in
             
             if let itemTitle = textField.text{
                 if itemTitle != ""{
                     let item = Item(context: self.context)
                     item.title = itemTitle
+                    item.parentCategory = self.selectedCategory
                     self.itemArr.append(item)
                     
                     self.saveItems()
                 }
             }
         }
+        
+        //add action button to alert
         alert.addAction(alertAddAction)
         
-        
+        //set up cancel button
         let alertCancelAction = UIAlertAction(title: K.alertCancelTitle, style: .cancel, handler: nil)
         
+        //add cancel button to alert
         alert.addAction(alertCancelAction)
         
-        
+        //show alert
         present(alert, animated: true, completion: nil)
         
     }
@@ -128,7 +143,15 @@ class TodoListViewController: UITableViewController{
     }
     
     //func to fetch data to context to be loaded
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        }else{
+            request.predicate = categoryPredicate
+        }
+        
         do {
             itemArr = try context.fetch(request)
         } catch {
@@ -206,13 +229,13 @@ extension TodoListViewController: UISearchBarDelegate{
         let req: NSFetchRequest<Item> = Item.fetchRequest()
         
         // sets the query rules for the fetcher
-        req.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text ?? "*")
+        let searchPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text ?? "*")
         
         // sets the sort order
         req.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         // loads the data to the context
-        loadItems(with: req)
+        loadItems(with: req, predicate: searchPredicate)
     }
     
     
