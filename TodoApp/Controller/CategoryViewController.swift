@@ -7,15 +7,15 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
     //to get model context of core data from appDelegate
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()
     
     //init array of NSManagedObject
-    var categoryArr = [Category]()
+    var categoryArr :Results<Category>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,15 +36,19 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return categoryArr.count
+        return categoryArr?.count ?? 1
     }
     
     //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: K.tbCategoryCellId, for: indexPath)
-        let category = categoryArr[indexPath.row]
-        cell.textLabel?.text = category.name
+        if let category = categoryArr?[indexPath.row] {
+            cell.textLabel?.text = category.name
+        } else {
+            cell.textLabel?.text = "No Category Added"
+        }
+        
         return cell
     }
     
@@ -58,15 +62,16 @@ class CategoryViewController: UITableViewController {
         let destinationVC = segue.destination as! TodoListViewController
         
         if let indexPath = tableView.indexPathForSelectedRow{
-            destinationVC.selectedCategory = categoryArr[indexPath.row]
-            print(categoryArr[indexPath.row])
+            destinationVC.selectedCategory = categoryArr?[indexPath.row]
         }
     }
     
     //function to dave context data to model of core data
-    func saveCategory() {
+    func save(category: Category) {
         do {
-            try context.save()
+            try realm.write{
+                realm.add(category)
+            }
         } catch {
             print("error saving context: \(error)")
         }
@@ -75,13 +80,8 @@ class CategoryViewController: UITableViewController {
     }
     
     //func to fetch data to context to be loaded
-    func loadCategory(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        do {
-            categoryArr = try context.fetch(request)
-        } catch {
-            print("error on fetch data \(error)")
-        }
-        
+    func loadCategory() {
+        categoryArr = realm.objects(Category.self)
         tableView.reloadData()
         
     }
@@ -109,11 +109,10 @@ class CategoryViewController: UITableViewController {
             
             if let itemTitle = textField.text{
                 if itemTitle != ""{
-                    let category = Category(context: self.context)
-                    category.name = itemTitle
-                    self.categoryArr.append(category)
-                    
-                    self.saveCategory()
+                    let newCategory = Category()
+                    newCategory.name = itemTitle
+                    newCategory.createdCategory = Date()
+                    self.save(category: newCategory)
                 }
             }
         }
@@ -130,61 +129,4 @@ class CategoryViewController: UITableViewController {
         //show alert
         present(alert, animated: true, completion: nil)
     }
-    
-    
-    /*
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-     
-     // Configure the cell...
-     
-     return cell
-     }
-     */
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
 }

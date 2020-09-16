@@ -7,15 +7,17 @@
 //
 
 import UIKit
+import RealmSwift
 import CoreData
+
 
 class TodoListViewController: UITableViewController{
     
-    //to get model context of core data from appDelegate
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    //create Real instance
+    let realm = try! Realm()
     
     //init array of NSManagedObject
-    var itemArr = [Item]()
+    var itemArr : Results<Item>?
     
     var selectedCategory : Category?{
         didSet{
@@ -29,37 +31,29 @@ class TodoListViewController: UITableViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //        get location of core data files
-        //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
     // MARK: - Table view data source
-    //
-    //    override func numberOfSections(in tableView: UITableView) -> Int {
-    //        // #warning Incomplete implementation, return the number of sections
-    //        return itemArray.count
-    //    }
     
     //func to create number of cells to be used
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
-        return itemArr.count
+        return itemArr?.count ?? 1
     }
     
     //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: K.tbItemCellId, for: indexPath)
-        let item = itemArr[indexPath.row]
-        cell.textLabel?.text = item.title
-        cell.accessoryType = item.isDone ? .checkmark : .none
+        if let item = itemArr?[indexPath.row]{
+            cell.textLabel?.text = item.title
+            cell.accessoryType = item.isDone ? .checkmark : .none
+        }else{
+            cell.textLabel?.text = "No Item Added"
+        }
+        
         
         return cell
     }
@@ -67,22 +61,23 @@ class TodoListViewController: UITableViewController{
     //func to run when cell is clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //        //to update item using core data
-        //        itemArr[indexPath.row].setValue(!itemArr[indexPath.row].isDone, forKey: "isDone")
-        //
-        //        //to delete item using core data
-        //        context.delete(itemArr[indexPath.row])
-        //        itemArr.remove(at: indexPath.row)
-        
-        //alternative update item
-        if itemArr[indexPath.row].isDone {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-            itemArr[indexPath.row].isDone =  false
-        }else{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-            itemArr[indexPath.row].isDone =  true
+        do {
+            try self.realm.write{
+                // Alternative update item
+                if (itemArr?[indexPath.row].isDone)! {
+                    tableView.cellForRow(at: indexPath)?.accessoryType = .none
+                    itemArr?[indexPath.row].isDone =  false
+                }else{
+                    tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+                    itemArr?[indexPath.row].isDone =  true
+                }
+                //alternative update
+//                itemArr?[indexPath.row].isDone = !(itemArr?[indexPath.row].isDone)!
+            }
+        } catch {
+            print("Error onWrite Realm: \(error)")
         }
-        saveItems()
+        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -90,13 +85,13 @@ class TodoListViewController: UITableViewController{
     // add new item
     @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
         
-        //create textfield to retreive alert string
+        // create textfield to retreive alert string
         var textField = UITextField()
         
-        //create alert VC
+        // create alert VC
         let alert = UIAlertController(title: K.alertVCItemTitle, message: "", preferredStyle: .alert)
         
-        //add and set alert textfield
+        // add and set alert textfield
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = K.alertItemPlaceholder
             textField = alertTextField
@@ -107,14 +102,19 @@ class TodoListViewController: UITableViewController{
             
             if let itemTitle = textField.text{
                 if itemTitle != ""{
-                    let item = Item(context: self.context)
-                    item.title = itemTitle
-                    item.parentCategory = self.selectedCategory
-                    self.itemArr.append(item)
-                    
-                    self.saveItems()
+                    do {
+                        try self.realm.write{
+                            let newItem = Item()
+                            newItem.title = itemTitle
+                            newItem.createdItem = Date()
+                            self.selectedCategory?.childItem.append(newItem)
+                        }
+                    } catch {
+                        print("Error onWrite Realm: \(error)")
+                    }
                 }
             }
+            self.tableView.reloadData()
         }
         
         //add action button to alert
@@ -131,10 +131,12 @@ class TodoListViewController: UITableViewController{
         
     }
     
-    //function to dave context data to model of core data
-    func saveItems() {
+    //function to save context data to model of core data
+    func saveItems(item: Item) {
         do {
-            try context.save()
+            try realm.write{
+                realm.add(item)
+            }
         } catch {
             print("error saving context: \(error)")
         }
@@ -143,78 +145,15 @@ class TodoListViewController: UITableViewController{
     }
     
     //func to fetch data to context to be loaded
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+    func loadItems(predicate: NSPredicate? = nil) {
         
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        }else{
-            request.predicate = categoryPredicate
+        // let category = realm.objects(Category.self).filter("name == %@", selectedCategory?.name)
+        itemArr = selectedCategory?.childItem.sorted(byKeyPath: "title", ascending: true)
+        if predicate != nil {
+            itemArr = itemArr?.filter(predicate!)
         }
-        
-        do {
-            itemArr = try context.fetch(request)
-        } catch {
-            print("error on fetch data \(error)")
-        }
-        
         tableView.reloadData()
-        
     }
-    /*
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-     
-     // Configure the cell...
-     
-     return cell
-     }
-     */
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
     
 }
 
@@ -222,20 +161,13 @@ class TodoListViewController: UITableViewController{
 
 extension TodoListViewController: UISearchBarDelegate{
     
-    //
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        // creates fetch pointer of Item type
-        let req: NSFetchRequest<Item> = Item.fetchRequest()
-        
+
         // sets the query rules for the fetcher
         let searchPredicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text ?? "*")
-        
-        // sets the sort order
-        req.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
+
         // loads the data to the context
-        loadItems(with: req, predicate: searchPredicate)
+        loadItems(predicate: searchPredicate)
     }
     
     
@@ -249,11 +181,4 @@ extension TodoListViewController: UISearchBarDelegate{
             
         }
     }
-    
-    //    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-    //        if searchBar.text?.count == 0 {
-    //            loadItems()
-    //            searchBar.resignFirstResponder()
-    //        }
-    //    }
 }
