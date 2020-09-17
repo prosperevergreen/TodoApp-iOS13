@@ -149,7 +149,7 @@ extension CategoryViewController: SwipeTableViewCellDelegate{
                 }
             }
             
-            tableView.reloadData()
+//            tableView.reloadData()
         }
 
         // customize the action appearance
