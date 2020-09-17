@@ -148,9 +148,9 @@ class TodoListViewController: UITableViewController{
     func loadItems(predicate: NSPredicate? = nil) {
         
         // let category = realm.objects(Category.self).filter("name == %@", selectedCategory?.name)
-        itemArr = selectedCategory?.childItem.sorted(byKeyPath: "title", ascending: true)
+        itemArr = selectedCategory?.childItem.sorted(byKeyPath: "createdItem", ascending: true)
         if predicate != nil {
-            itemArr = itemArr?.filter(predicate!)
+            itemArr = itemArr?.filter(predicate!).sorted(byKeyPath: "title", ascending: true)
         }
         tableView.reloadData()
     }
