@@ -9,6 +9,7 @@
 import Foundation
 
 struct K{
+    static let cellId = "Cell"
     static let alertCancelTitle = "Cancel"
     
     // Items

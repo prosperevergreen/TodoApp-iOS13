@@ -8,10 +8,10 @@
 
 import UIKit
 import RealmSwift
-import CoreData
+import ChameleonFramework
 
 
-class TodoListViewController: UITableViewController{
+class TodoListViewController: SwipeTableViewController{
     
     //create Real instance
     let realm = try! Realm()
@@ -46,15 +46,15 @@ class TodoListViewController: UITableViewController{
     //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.tbItemCellId, for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         if let item = itemArr?[indexPath.row]{
             cell.textLabel?.text = item.title
             cell.accessoryType = item.isDone ? .checkmark : .none
+            cell.backgroundColor = UIColor(hexString: (selectedCategory?.backgroundColor)!)?.darken(byPercentage: CGFloat(indexPath.row)/CGFloat(itemArr!.count))
+            cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         }else{
             cell.textLabel?.text = "No Item Added"
         }
-        
-        
         return cell
     }
     
@@ -155,6 +155,18 @@ class TodoListViewController: UITableViewController{
         tableView.reloadData()
     }
     
+    //func to override delete
+    override func deleteCell(index: IndexPath) {
+        if let itemForDeletion = selectedCategory?.childItem[index.row]{
+            do{
+                try self.realm.write{
+                    self.realm.delete(itemForDeletion)
+                }
+            }catch{
+                print("Error on delete Category: \(error)")
+            }
+        }
+    }
 }
 
 //MARK: - Search Bar setup using Delegate protocol

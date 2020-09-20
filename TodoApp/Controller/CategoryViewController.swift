@@ -8,9 +8,9 @@
 
 import UIKit
 import RealmSwift
-import SwipeCellKit
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     //to get model context of core data from appDelegate
     let realm = try! Realm()
@@ -24,13 +24,15 @@ class CategoryViewController: UITableViewController {
         //Load data on load view
         loadCategory()
         
-        tableView.rowHeight = 80.0
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
+    
+  
     
     
     // MARK: - Table view data source
@@ -43,13 +45,15 @@ class CategoryViewController: UITableViewController {
     //func to create each cell and load data
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.tbCategoryCellId, for: indexPath) as! SwipeTableViewCell
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         if let category = categoryArr?[indexPath.row] {
             cell.textLabel?.text = category.name
+            cell.backgroundColor = UIColor(hexString: category.backgroundColor!)
+            cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor!, returnFlat: true)
         } else {
             cell.textLabel?.text = "No Category Added"
         }
-        cell.delegate = self
+        
         return cell
     }
     
@@ -87,6 +91,19 @@ class CategoryViewController: UITableViewController {
         
     }
     
+    //func to override delete
+    override func deleteCell(index: IndexPath) {
+        if let categoryForDeletion = categoryArr?[index.row]{
+            do{
+                try self.realm.write{
+                    self.realm.delete(categoryForDeletion)
+                }
+            }catch{
+                print("Error on delete Category: \(error)")
+            }
+        }
+    }
+    
     //MARK: - Alert View
     
     // add new Category button
@@ -113,6 +130,7 @@ class CategoryViewController: UITableViewController {
                     let newCategory = Category()
                     newCategory.name = itemTitle
                     newCategory.createdCategory = Date()
+                    newCategory.backgroundColor = UIColor.randomFlat().hexValue()
                     self.save(category: newCategory)
                 }
             }
@@ -130,39 +148,6 @@ class CategoryViewController: UITableViewController {
         //show alert
         present(alert, animated: true, completion: nil)
     }
-}
-
-extension CategoryViewController: SwipeTableViewCellDelegate{
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
-
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            // handle action by updating model with deletion
-            if let categoryForDeletion = self.categoryArr?[indexPath.row]{
-                do{
-                    try self.realm.write{
-                        self.realm.delete(categoryForDeletion)
-                    }
-                }catch{
-                    print("Error on delete Category: \(error)")
-                }
-            }
-            
-//            tableView.reloadData()
-        }
-
-        // customize the action appearance
-        deleteAction.image = UIImage(systemName: "trash")
-
-        return [deleteAction]
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        var options = SwipeOptions()
-        options.expansionStyle = .destructive
-//        options.transitionStyle = .border
-        return options
-    }
     
 }
