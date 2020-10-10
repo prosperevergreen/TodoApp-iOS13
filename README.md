@@ -5,11 +5,10 @@ A simple ToDo app for managing, checking and deleting your tasks. The objective 
 
 ## Technology implemented:
 
-* persistence
+* Persistence Data
 * Realm
 * Core Data
 * UI Storyboard
-* Struct
-* Stack View
-* Auto Layout
-* Dynamically changing UI
+* UITableView
+* Dynamically manipulating UI
+* CocoaPod
