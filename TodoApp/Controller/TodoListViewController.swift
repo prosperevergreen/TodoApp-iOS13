@@ -26,12 +26,12 @@ class TodoListViewController: SwipeTableViewController{
         }
     }
     
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var itemNavTitleBar: UINavigationItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+        searchBar.delegate = self
     }
     
     // MARK: - Table view data source

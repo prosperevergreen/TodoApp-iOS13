@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Category -->
+        <!--Category-->
         <scene sceneID="NgX-m8-y2r">
             <objects>
-                <tableViewController id="a5b-Ae-aio" customClass="CategoryViewController" customModule="Todo_App" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="a5b-Ae-aio" userLabel="Category" customClass="CategoryViewController" customModule="Todo_App" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="IjH-Mb-FMG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -32,7 +32,7 @@
                             <outlet property="delegate" destination="a5b-Ae-aio" id="KcV-FI-2cm"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Category " id="BLw-J6-z3h">
+                    <navigationItem key="navigationItem" title="To Do Category " id="BLw-J6-z3h">
                         <barButtonItem key="rightBarButtonItem" title="Item" image="plus" catalog="system" id="jaT-st-SEr">
                             <color key="tintColor" name="BlackWhiteColor"/>
                             <connections>
@@ -60,9 +60,6 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
-                            <connections>
-                                <outlet property="delegate" destination="sl3-Mt-LB8" id="qJh-Os-qDJ"/>
-                            </connections>
                         </searchBar>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="6we-Sx-USl" customClass="SwipeTableViewCell" customModule="SwipeCellKit">
@@ -88,11 +85,12 @@
                     </navigationItem>
                     <connections>
                         <outlet property="itemNavTitleBar" destination="V3t-jD-ic4" id="DR1-BT-xmt"/>
+                        <outlet property="searchBar" destination="yCm-au-HXm" id="MYW-yW-dge"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J8O-Ui-RlE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="881.15942028985512" y="81.696428571428569"/>
+            <point key="canvasLocation" x="807" y="82"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="2Ki-Xv-Jgs">

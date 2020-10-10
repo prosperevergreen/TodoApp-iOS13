@@ -15,6 +15,7 @@
 		22884FA82511721B00BAE1C2 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22884FA72511721B00BAE1C2 /* Item.swift */; };
 		22884FAA2511722700BAE1C2 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22884FA92511722700BAE1C2 /* Category.swift */; };
 		22884FAC251365E100BAE1C2 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22884FAB251365E100BAE1C2 /* SwipeTableViewController.swift */; };
+		22CD0E11253270DD00193480 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22CD0E10253270DD00193480 /* Assets.xcassets */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
 		EB2BE503239524DC00FB933B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE502239524DC00FB933B /* Assets.xcassets */; };
 		EB2BE506239524DC00FB933B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE504239524DC00FB933B /* LaunchScreen.storyboard */; };
@@ -28,6 +29,7 @@
 		22884FA72511721B00BAE1C2 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		22884FA92511722700BAE1C2 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		22884FAB251365E100BAE1C2 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
+		22CD0E10253270DD00193480 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3225B3A98AE5071B3A717EB5 /* Pods-TodoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TodoApp.debug.xcconfig"; path = "Target Support Files/Pods-TodoApp/Pods-TodoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		6E26760C229F6E4B996A730A /* Pods-TodoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TodoApp.release.xcconfig"; path = "Target Support Files/Pods-TodoApp/Pods-TodoApp.release.xcconfig"; sourceTree = "<group>"; };
 		914BC61862BEF4C79F45CFA0 /* Pods_TodoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TodoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +124,7 @@
 				2276F60225019D4100752E96 /* Supporting Files */,
 				EB2BE507239524DC00FB933B /* Info.plist */,
 				220D54CF250130B100C3A1D2 /* Constant.swift */,
+				22CD0E10253270DD00193480 /* Assets.xcassets */,
 			);
 			path = TodoApp;
 			sourceTree = "<group>";
@@ -197,6 +200,7 @@
 			files = (
 				222F00EC2501A4BB009287DD /* Main.storyboard in Resources */,
 				EB2BE506239524DC00FB933B /* LaunchScreen.storyboard in Resources */,
+				22CD0E11253270DD00193480 /* Assets.xcassets in Resources */,
 				EB2BE503239524DC00FB933B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,7 +337,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -388,7 +392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -402,6 +406,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3225B3A98AE5071B3A717EB5 /* Pods-TodoApp.debug.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = W58Z4RC74Z;
 				INFOPLIST_FILE = TodoApp/Info.plist;
@@ -421,6 +426,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6E26760C229F6E4B996A730A /* Pods-TodoApp.release.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = W58Z4RC74Z;
 				INFOPLIST_FILE = TodoApp/Info.plist;
