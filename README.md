@@ -12,7 +12,7 @@ A simple ToDo app for managing, checking and deleting your tasks. The objective 
 ```
 $ pod install
 ```
-5. Run app
+3. Run app
 
 ## Technology implemented:
 
